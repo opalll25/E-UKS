@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-UKS SMK Mesir — Advanced Medical Information System</title>
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Dynamic Island -->
+    <div class="dynamic-island" id="dynamicIsland">
+        <div class="island-content">
+            <span id="islandIcon">🏥</span>
+            <span id="islandText">E-UKS SMK Mesir Connected</span>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">✚</div>
+                <div>
+                    <span class="logo-title">E-UKS <small class="logo-version">v3.0 PRO</small></span>
+                    <span class="logo-sub">SMK Mesir Central Health</span>
+                </div>
+            </div>
+
+            <div class="nav-actions">
+                <button id="exportBtn" class="btn-outline" onclick="exportCSV()" title="Download Laporan Excel">
+                    📥 Export CSV
+                </button>
+                <button id="soundToggleBtn" class="btn-outline" onclick="toggleSound()" title="Efek Suara Aktif/Mati">
+                    🔊 Sound: ON
+                </button>
+                <button id="darkModeBtn" class="dark-btn">
+                    🌙 Dark
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <div class="badge">⚡ Enterprise Health Dashboard • 2026</div>
+                <h1>Pusat Kendali Kesehatan Siswa SMK Mesir</h1>
+                <p>Monitoring klinis, triase darurat, rekam medis digital, dan rekapitulasi data terpadu dalam satu platform pintar.</p>
+            </div>
+            <div class="hero-stats-mini">
+                <div class="mini-stat">
+                    <span class="mini-val" id="clockMini">00:00</span>
+                    <span class="mini-label">Waktu Sistem</span>
+                </div>
+                <div class="mini-stat">
+                    <span class="mini-val" id="statusServer">🟢 Online</span>
+                    <span class="mini-label">Status Database</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Stats -->
+        <section class="dashboard">
+            <div class="card stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Total Kunjungan</span>
+                    <div class="icon bg-emerald">📋</div>
+                </div>
+                <h2 id="totalPasien">0</h2>
+                <span class="stat-desc">Siswa terdaftar</span>
+            </div>
+
+            <div class="card stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Antrean Menunggu</span>
+                    <div class="icon bg-amber">⏳</div>
+                </div>
+                <h2 id="menunggu">0</h2>
+                <span class="stat-desc">Belum diperiksa</span>
+            </div>
+
+            <div class="card stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Sedang Ditangani</span>
+                    <div class="icon bg-blue">🩺</div>
+                </div>
+                <h2 id="ditangani">0</h2>
+                <span class="stat-desc">Dalam perawatan UKS</span>
+            </div>
+
+            <div class="card stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Selesai / Pulang</span>
+                    <div class="icon bg-green">✅</div>
+                </div>
+                <h2 id="pulang">0</h2>
+                <span class="stat-desc">Kembali ke kelas</span>
+            </div>
+        </section>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            
+            <!-- Form Input -->
+            <section class="form-card">
+                <div class="card-header">
+                    <h2 id="formTitle">📝 Rekam Medis Baru</h2>
+                    <p>Input keluhan dan tindakan pemeriksaan siswa</p>
+                </div>
+
+                <!-- Quick Presets -->
+                <div class="quick-presets">
+                    <span class="preset-label">⚡ Template Cepat:</span>
+                    <div class="preset-chips">
+                        <button type="button" class="chip" onclick="applyPreset('Sakit Kepala', 'Ringan', 'Sakit kepala akibat kelelahan belajar, diberi Paracetamol 1 tab & istirahat 15 menit.')">Headache</button>
+                        <button type="button" class="chip" onclick="applyPreset('Demam', 'Sedang', 'Suhu tubuh 38°C, diberikan kompres hangat dan obat penurun panas.')">Demam</button>
+                        <button type="button" class="chip" onclick="applyPreset('Luka Ringan / Cedera', 'Ringan', 'Luka lecet di lutut akibat jatuh praktek, dibersihkan dengan betadine & ditutup hansaplast.')">Luka Jatuh</button>
+                    </div>
+                </div>
+
+                <form id="formPasien">
+                    <div class="form-group">
+                        <label for="nama">Nama Lengkap Siswa</label>
+                        <input type="text" id="nama" placeholder="Contoh: Budi Santoso" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="kelas">Kelas / Jurusan</label>
+                            <input type="text" id="kelas" placeholder="Contoh: XI TKJ 2" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="keluhan">Kategori Keluhan</label>
+                            <select id="keluhan" required>
+                                <option value="">Pilih Keluhan</option>
+                                <option>Sakit Kepala</option>
+                                <option>Demam</option>
+                                <option>Sakit Perut / Maag</option>
+                                <option>Pusing / Lemas</option>
+                                <option>Batuk / Flu</option>
+                                <option>Luka Ringan / Cedera</option>
+                                <option>Lainnya</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prioritas">Tingkat Triase Kondisi</label>
+                        <select id="prioritas" required>
+                            <option value="">Pilih Tingkat Kondisi</option>
+                            <option value="Ringan">🟢 Ringan (Istirahat / Obat Ringan)</option>
+                            <option value="Sedang">🟡 Sedang (Observasi Petugas UKS)</option>
+                            <option value="Darurat">🔴 Darurat (Rujukan / Panggil Ortu)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="keterangan">Catatan Medis & Tindakan</label>
+                        <textarea id="keterangan" placeholder="Tuliskan gejala klinis dan obat yang diberikan..." required></textarea>
+                        <div class="textarea-footer">
+                            <small class="hint">Min. 10 karakter</small>
+                            <small id="counter">0 Karakter</small>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" id="submitBtn" class="btn btn-primary">
+                            💾 Simpan Rekam Medis
+                        </button>
+                        <button type="button" id="cancelEditBtn" class="btn btn-secondary" style="display: none;" onclick="batalEdit()">
+                            ✖ Batal Edit
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Data & Analytics Section -->
+            <div class="right-column">
+                
+                <!-- Analytics Card -->
+                <div class="analytics-card">
+                    <div class="analytics-header">
+                        <h3>📊 Analisis Keluhan Hari Ini</h3>
+                        <span id="analyticsTotal">0 Kasus Aktif</span>
+                    </div>
+                    <div class="bars-container" id="analyticsBars">
+                        <!-- Render via JS -->
+                    </div>
+                </div>
+
+                <!-- Toolbar & Table Section -->
+                <section class="table-section">
+                    <div class="toolbar">
+                        <div class="search-box">
+                            <span>🔍</span>
+                            <input type="text" id="searchInput" placeholder="Cari nama atau kelas siswa...">
+                        </div>
+
+                        <div class="filter-actions">
+                            <select id="filterKeluhan">
+                                <option value="">Semua Keluhan</option>
+                                <option>Sakit Kepala</option>
+                                <option>Demam</option>
+                                <option>Sakit Perut / Maag</option>
+                                <option>Pusing / Lemas</option>
+                                <option>Batuk / Flu</option>
+                                <option>Luka Ringan / Cedera</option>
+                                <option>Lainnya</option>
+                            </select>
+
+                            <button class="btn btn-danger-outline" onclick="hapusPasienPulang()" title="Bersihkan data selesai">
+                                🧹 Bersihkan
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Table Card -->
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h2>📋 Daftar Rekam Medis Pasien</h2>
+                            <span class="badge-count" id="showingCount">0 Data</span>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table>
+                               <thead>
+                                    <tr>
+                                        <th>Siswa</th>
+                                        <th>Keluhan & Detail</th>
+                                        <th>Kondisi</th>
+                                        <th>Waktu Masuk</th>
+                                        <th>Status</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelData">
+                                    <!-- Render via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div id="emptyState" class="empty-state" style="display: none;">
+                            <div class="empty-icon">🩺</div>
+                            <h3>Belum Ada Rekam Medis</h3>
+                            <p>Data kunjungan siswa UKS akan tampil di sini secara real-time.</p>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast">✅ Operasi berhasil</div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p class="footer-author">Lead Developer: <strong>Noval Fayyaz Farrasdhika</strong> • X RPL Mesir</p>
+            <p class="footer-copy">E-UKS SMK Mesir Medical Intelligence System © 2026</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
